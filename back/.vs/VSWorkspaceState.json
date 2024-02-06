@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\RecipeBackend",
+    "\\RecipeBackend\\RecipeBackend",
+    "\\RecipeBackend\\RecipeBackend\\DTO"
+  ],
+  "SelectedNode": "\\RecipeBackend\\RecipeBackend\\DTO\\LoginDTO.cs",
+  "PreviewInSolutionExplorer": false
+}

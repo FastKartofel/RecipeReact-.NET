@@ -11,7 +11,6 @@ namespace RecipeBackend.DAL
 
         public DbSet<User> Users { get; set; }
 
-        public DbSet<Recipe> Recipes { get; set; }
 
         public DbSet<Comment> Comments { get; set; }
 
@@ -23,13 +22,7 @@ namespace RecipeBackend.DAL
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Change to Restrict to prevent cascading
-
-            modelBuilder.Entity<Comment>()
-                .HasOne(c => c.Recipe)
-                .WithMany(r => r.Comments)
-                .HasForeignKey(c => c.RecipeId)
-                .OnDelete(DeleteBehavior.Cascade); // Keep Cascade here
+                .OnDelete(DeleteBehavior.Restrict); // Keep relationships
         }
 
     }

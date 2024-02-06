@@ -3399,11 +3399,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\paddy\\OneDrive\\Pulpit\\RecipeBackend\\RecipeBackend\\RecipeBackend.csproj",
+      "projectUniqueName": "C:\\Users\\paddy\\OneDrive\\Pulpit\\untitled2\\reccxfront\\RecipeReact-.NET\\back\\RecipeBackend\\RecipeBackend\\RecipeBackend.csproj",
       "projectName": "RecipeBackend",
-      "projectPath": "C:\\Users\\paddy\\OneDrive\\Pulpit\\RecipeBackend\\RecipeBackend\\RecipeBackend.csproj",
+      "projectPath": "C:\\Users\\paddy\\OneDrive\\Pulpit\\untitled2\\reccxfront\\RecipeReact-.NET\\back\\RecipeBackend\\RecipeBackend\\RecipeBackend.csproj",
       "packagesPath": "C:\\Users\\paddy\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\paddy\\OneDrive\\Pulpit\\RecipeBackend\\RecipeBackend\\obj\\",
+      "outputPath": "C:\\Users\\paddy\\OneDrive\\Pulpit\\untitled2\\reccxfront\\RecipeReact-.NET\\back\\RecipeBackend\\RecipeBackend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\paddy\\AppData\\Roaming\\NuGet\\NuGet.Config",

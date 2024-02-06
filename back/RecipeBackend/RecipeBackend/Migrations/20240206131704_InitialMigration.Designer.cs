@@ -12,8 +12,8 @@ using RecipeBackend.DAL;
 namespace RecipeBackend.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20240128152359_Migration1")]
-    partial class Migration1
+    [Migration("20240206131704_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace RecipeBackend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("RecipeBackend.DAL.Comment", b =>
+            modelBuilder.Entity("Comment", b =>
                 {
                     b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -41,58 +41,14 @@ namespace RecipeBackend.Migrations
                     b.Property<DateTime>("DatePosted")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("CommentId");
 
-                    b.HasIndex("RecipeId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("RecipeBackend.DAL.Recipe", b =>
-                {
-                    b.Property<int>("RecipeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecipeId"));
-
-                    b.Property<DateTime>("DatePosted")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<string>("Instructions")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<int>("PreparationTime")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RecipeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("RecipeBackend.DAL.User", b =>
@@ -107,9 +63,13 @@ namespace RecipeBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -121,46 +81,20 @@ namespace RecipeBackend.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("RecipeBackend.DAL.Comment", b =>
+            modelBuilder.Entity("Comment", b =>
                 {
-                    b.HasOne("RecipeBackend.DAL.Recipe", "Recipe")
-                        .WithMany("Comments")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RecipeBackend.DAL.User", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Recipe");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RecipeBackend.DAL.Recipe", b =>
-                {
-                    b.HasOne("RecipeBackend.DAL.User", "User")
-                        .WithMany("Recipes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RecipeBackend.DAL.Recipe", b =>
-                {
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("RecipeBackend.DAL.User", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Recipes");
                 });
 #pragma warning restore 612, 618
         }

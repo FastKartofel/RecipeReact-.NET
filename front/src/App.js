@@ -11,7 +11,7 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/post-comment" element={<PostComment />} />
+                <Route path="/comments" element={<PostComment />} />
                 <Route path="/" element={<Navigate replace to="/login" />} />
             </Routes>
         </Router>

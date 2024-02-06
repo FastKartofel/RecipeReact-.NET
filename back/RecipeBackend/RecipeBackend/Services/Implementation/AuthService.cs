@@ -1,9 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using RecipeBackend.DAL;
 using RecipeBackend.Services.Interfaces;
+using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 public class AuthService : IAuthService
 {
@@ -18,11 +23,10 @@ public class AuthService : IAuthService
 
     public async Task<User> Register(User user, string password)
     {
-        // Create password hash
         CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
-        user.PasswordHash = Convert.ToBase64String(passwordHash);
-        // user.PasswordSalt = Convert.ToBase64String(passwordSalt); // potentially storing salt, basically additional security level
+        user.PasswordHash = passwordHash;
+        user.PasswordSalt = passwordSalt;
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -33,49 +37,52 @@ public class AuthService : IAuthService
     public async Task<string> Login(string username, string password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null || !VerifyPasswordHash(password, Convert.FromBase64String(user.PasswordHash)))
+        if (user == null || !VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
         {
-            return null; // User not found or password incorrect
+            return null; // Either user not found or password doesn't match
         }
 
-        // Generate JWT token
         return GenerateJwtToken(user);
     }
 
-
-    // Helper methods for JWT token generation, password hashing, etc.
     private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
-        using (var hmac = new System.Security.Cryptography.HMACSHA512())
+        using (var hmac = new HMACSHA512())
         {
             passwordSalt = hmac.Key;
             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
     }
 
-    private bool VerifyPasswordHash(string password, byte[] storedHash)
+    private bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
     {
-        using (var hmac = new System.Security.Cryptography.HMACSHA512())
+        using (var hmac = new HMACSHA512(storedSalt))
         {
             var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(storedHash);
+            for (int i = 0; i < computedHash.Length; i++)
+            {
+                if (computedHash[i] != storedHash[i]) return false;
+            }
         }
+        return true;
     }
 
     private string GenerateJwtToken(User user)
     {
-        var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes("YourSuperSecretKey");
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
         };
+
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }

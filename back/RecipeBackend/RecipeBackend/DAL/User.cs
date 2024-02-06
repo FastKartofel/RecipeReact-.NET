@@ -5,6 +5,7 @@ namespace RecipeBackend.DAL
     public class User
     {
         [Key]
+        [Required]
         public int UserId { get; set; }
 
         [Required]
@@ -16,10 +17,11 @@ namespace RecipeBackend.DAL
         public string Email { get; set; }
 
         [Required]
-        public string PasswordHash { get; set; }
+        public byte[] PasswordHash { get; set; }
+
+        public byte[] PasswordSalt { get; set; }
 
         // Navigation property for relationships
-        public virtual ICollection<Recipe> Recipes { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
 
     }

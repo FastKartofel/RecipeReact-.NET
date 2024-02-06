@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "BCgV0CsiIK1sTLw/nRoLESFDtZEi3j82o76LdcF9V3biBjJZl4A31/Pst+uuGLehk5SRalsRpfZZZBJgV5PaFQ==",
+  "dgSpecHash": "VEAln1HL4Et2ygojjW64AjEP/vG6tEkrLhkIuFMH329Lceh+2YiOSAUZJBFsdbmjeK1Y2btc/X9aL6lEDk5sNQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\paddy\\OneDrive\\Pulpit\\RecipeBackend\\RecipeBackend\\RecipeBackend.csproj",
+  "projectFilePath": "C:\\Users\\paddy\\OneDrive\\Pulpit\\untitled2\\reccxfront\\RecipeReact-.NET\\back\\RecipeBackend\\RecipeBackend\\RecipeBackend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\paddy\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\paddy\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

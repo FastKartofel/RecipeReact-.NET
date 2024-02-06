@@ -5,7 +5,7 @@ using RecipeBackend.Services.Interfaces;
 using RecipeBackend.DTO;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -20,9 +20,6 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(UserDTO userDto)
     {
-        // Assuming UserDto has Username, Email, and Password
-
-        // Check if the user already exists
         if (await _mainDbContext.Users.AnyAsync(x => x.Username == userDto.Username))
         {
             return BadRequest("Username is already taken");
@@ -32,30 +29,33 @@ public class AuthController : ControllerBase
         {
             Username = userDto.Username,
             Email = userDto.Email
-            // Don't set the password hash here
         };
 
         var createdUser = await _authService.Register(user, userDto.Password);
 
-        // Don't send the password hash back
-        createdUser.PasswordHash = null;
+        var userResponse = new UserResponseDTO
+        {
+            UserId = createdUser.UserId,
+            Username = createdUser.Username,
+            Email = createdUser.Email
+        };
 
-        return StatusCode(201, createdUser);
+        return StatusCode(201, userResponse);
     }
+
 
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDTO loginDto)
     {
-        // Assuming LoginDto has Username and Password
         var token = await _authService.Login(loginDto.Username, loginDto.Password);
 
-        if (token == null)
-            return Unauthorized("Username or password is incorrect");
+        if (string.IsNullOrEmpty(token))
+        {
+            return Unauthorized("Invalid username or password");
+        }
 
         return Ok(new { token });
     }
 
-
-    // Other endpoints as necessary
 }

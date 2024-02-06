@@ -7,27 +7,30 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Set the URL for the application
+builder.WebHost.UseUrls("http://localhost:5000");
+
 // Add services to the container.
 builder.Services.AddDbContext<MainDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-//adding dependency injection to the container
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//for JWT auth
+// Configure JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKey")),
-            ValidateIssuer = false,
-            ValidateAudience = false
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ValidateIssuer = bool.Parse(builder.Configuration["Jwt:ValidateIssuer"]),
+            ValidateAudience = bool.Parse(builder.Configuration["Jwt:ValidateAudience"]),
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"]
         };
     });
 
@@ -37,11 +40,13 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // URL of the React frontend
+            policy.WithOrigins("http://localhost:3000") // Adjust as necessary
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // Ensure this is enabled if you're sending credentials
         });
 });
+
 
 var app = builder.Build();
 
@@ -52,11 +57,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 
